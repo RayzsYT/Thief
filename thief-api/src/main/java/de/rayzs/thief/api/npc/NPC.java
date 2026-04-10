@@ -1,15 +1,19 @@
 package de.rayzs.thief.api.npc;
 
 import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
 
+/**
+ * Basic NPC with low level functionalities like moving and changing states.
+ */
 public interface NPC {
 
     /**
-     * Spawn the NPC if not spawned yet.
+     * Spawn the NPC at a certain location if not spawned yet.
      *
+     * @param location Location where to spawn the NPC at.
      * @return Returns {@link Boolean#TRUE} if the NPC didn't exist before and spawned successfully. Returns {@link Boolean#FALSE} otherwise.
      */
+    boolean spawn(final Location location);
 
     /**
      * Remove the NPC.

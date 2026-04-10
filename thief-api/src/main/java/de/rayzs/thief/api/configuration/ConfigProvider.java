@@ -1,5 +1,8 @@
 package de.rayzs.thief.api.configuration;
 
+/**
+ * For creating or fetching existing {@link Config} objects.
+ */
 public interface ConfigProvider {
 
     /**
