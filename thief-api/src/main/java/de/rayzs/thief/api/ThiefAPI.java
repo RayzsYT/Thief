@@ -1,5 +1,6 @@
 package de.rayzs.thief.api;
 
+import de.rayzs.thief.api.session.SessionProvider;
 import org.bukkit.plugin.Plugin;
 
 import de.rayzs.thief.api.configuration.ConfigProvider;
@@ -28,4 +29,11 @@ public interface ThiefAPI {
      * @return NPC provider.
      */
     NPCProvider getNpcProvider();
+
+    /**
+     * Get the session provider.
+     *
+     * @return Session provider.
+     */
+    SessionProvider getSessionProvider();
 }

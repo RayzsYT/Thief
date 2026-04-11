@@ -6,3 +6,5 @@ version: 1.0.0
 api-version: 1.13
 
 main: de.rayzs.thief.plugin.ThiefPlugin
+
+

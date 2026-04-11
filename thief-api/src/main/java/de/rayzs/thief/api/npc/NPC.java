@@ -1,6 +1,9 @@
 package de.rayzs.thief.api.npc;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 /**
  * Basic NPC with low level functionalities like moving and changing states.
@@ -28,6 +31,12 @@ public interface NPC {
      * @param location Location.
      */
     void move(final Location location);
+
+    /**
+     * Set hunting target.
+     * @param target Target entity.
+     */
+    void setHuntingTarget(final LivingEntity target);
 
     /**
      * Current {@link AwareState} of the NPC:.

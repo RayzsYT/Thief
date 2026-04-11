@@ -1,6 +1,7 @@
 package de.rayzs.thief.plugin.impl.npc;
 
 import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mannequin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -9,6 +10,8 @@ import de.rayzs.thief.api.ThiefAPI;
 import de.rayzs.thief.api.npc.AwareState;
 import de.rayzs.thief.api.npc.NPC;
 
+import java.util.Random;
+
 public class ImplNPC implements NPC {
 
 
@@ -16,6 +19,7 @@ public class ImplNPC implements NPC {
     private AwareState state;
 
     private Location currentTargetLocation;
+    private LivingEntity huntingTargetEntity;
 
 
     public ImplNPC(final ThiefAPI api) {
@@ -24,8 +28,12 @@ public class ImplNPC implements NPC {
 
         new BukkitRunnable() {
 
+            final Random random = new Random();
+
             final double walkingSpeed = 0.1d;
             final double huntingSpeed = 0.15d;
+
+            long lastLookAround = System.currentTimeMillis();
 
             @Override
             public void run() {
@@ -36,39 +44,66 @@ public class ImplNPC implements NPC {
                 }
 
 
-
-                if (state == AwareState.LOOKING) {
-                    // Looks around...
-                    return;
-                }
-
-
-                // Moves (if possible)
-                if (currentTargetLocation == null) {
-                    return;
-                }
-
-
                 final Location current = entity.getLocation();
 
-                if (current.distance(currentTargetLocation) <= 2) {
+                if (state == AwareState.LOOKING) {
+
+                    if (System.currentTimeMillis() - lastLookAround < 1600) {
+                        return;
+                    }
+
+                    lastLookAround = System.currentTimeMillis();
+
+
+                    final Vector randomLookVec = current.clone().add(
+                            random.nextInt(3),
+                            0,
+                            random.nextInt(3)
+                    ).toVector();
+
+
+                    final Vector dir = randomLookVec
+                            .subtract(current.getDirection())
+                            .normalize();
+
+
+                    current.setDirection(dir);
+                    return;
+                }
+
+
+                final Location targetLocation = state == AwareState.HUNTING
+                        ? huntingTargetEntity.getLocation()
+                        : currentTargetLocation;
+
+                if (targetLocation == null) {
+                    return;
+                }
+
+
+                if (current.distance(targetLocation) <= 2) {
                     currentTargetLocation = null;
                     return;
                 }
 
-                final Vector dir = currentTargetLocation
+                final Vector dir = targetLocation
                     .clone()
                     .subtract(current)
                     .getDirection()
-                    .normalize()
-                    .multiply(
-                        state == AwareState.HUNTING 
-                        ? huntingSpeed : walkingSpeed
-                    );
+                    .normalize();
 
-                dir.setY(0);
+                dir.setY(current.getDirection().getY());
 
-                entity.setVelocity(dir);
+                final Vector vel = dir.clone().multiply(
+                        state == AwareState.HUNTING
+                                ? huntingSpeed
+                                : walkingSpeed
+                );
+
+                vel.setY(0);
+
+                entity.setVelocity(vel);
+                entity.getLocation().setDirection(dir);
             }
             
         }.runTaskTimer(api.getPlugin(), 10, 10);
@@ -85,7 +120,7 @@ public class ImplNPC implements NPC {
         }
 
 
-        entity = (Mannequin) location.getWorld().spawn(location, Mannequin.class, mannequin -> {
+        entity = location.getWorld().spawn(location, Mannequin.class, mannequin -> {
             mannequin.setCustomNameVisible(false);
         });
 
@@ -106,7 +141,12 @@ public class ImplNPC implements NPC {
     }
 
     public void move(final Location location) {
-        
+        currentTargetLocation = location;
+    }
+
+    @Override
+    public void setHuntingTarget(final LivingEntity target) {
+        huntingTargetEntity = target;
     }
 
     public AwareState getState() {

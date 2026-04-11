@@ -3,13 +3,21 @@ package de.rayzs.thief.plugin.impl.npc;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.rayzs.thief.api.ThiefAPI;
 import de.rayzs.thief.api.npc.*;
 import de.rayzs.thief.api.session.Session;
 
-public interface ImplNPCProvider implements NPCProvider {
-    
+public class ImplNPCProvider implements NPCProvider {
 
+    // Session Id, NPC
     private final Map<Integer, NPC> npcs = new HashMap<>();
+
+
+    private final ThiefAPI api;
+
+    public ImplNPCProvider(final ThiefAPI api) {
+        this.api = api;
+    }
 
 
     public NPC createNPC(final Session session) {
@@ -23,20 +31,20 @@ public interface ImplNPCProvider implements NPCProvider {
 
         
         // Apply new NPC to the session.
-        final NPC npc = ...;
+        final NPC npc = new ImplNPC(api);
         npcs.put(session.id(), npc);
 
         return npc;
     }
 
+
     public NPC getNPC(final Session session) {
         return npcs.get(session.id());
     }
 
-    public void resetAll() {
 
+    public void resetAll() {
         npcs.values().forEach(NPC::remove);
         npcs.clear();
-
     }
 }
