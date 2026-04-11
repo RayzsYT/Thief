@@ -4,7 +4,7 @@ import de.rayzs.thief.api.map.SimplifiedLocation;
 
 public class MapObject {
 
-    private MapObjects type;
+    private final MapObjects type;
     private SimplifiedLocation location;
 
     public MapObject(

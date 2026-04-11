@@ -24,7 +24,7 @@ public class ImplThiefAPI implements ThiefAPI {
 
         configProvider = new ImplConfigProvider();
         npcProvider = new ImplNPCProvider(this);
-        sessionProvider = new ImplSessionProvider();
+        sessionProvider = new ImplSessionProvider(this);
     }
 
 
