@@ -1,8 +1,11 @@
 package de.rayzs.thief.plugin.impl.npc;
 
+import de.rayzs.thief.api.session.Session;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mannequin;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -10,7 +13,9 @@ import de.rayzs.thief.api.ThiefAPI;
 import de.rayzs.thief.api.npc.AwareState;
 import de.rayzs.thief.api.npc.NPC;
 
+import java.util.Iterator;
 import java.util.Random;
+import java.util.UUID;
 
 public class ImplNPC implements NPC {
 
@@ -21,9 +26,12 @@ public class ImplNPC implements NPC {
     private Location currentTargetLocation;
     private LivingEntity huntingTargetEntity;
 
+    private final Session session;
 
-    public ImplNPC(final ThiefAPI api) {
 
+    public ImplNPC(final ThiefAPI api, final Session session) {
+
+        this.session = session;
 
 
         new BukkitRunnable() {
@@ -107,6 +115,29 @@ public class ImplNPC implements NPC {
             }
             
         }.runTaskTimer(api.getPlugin(), 10, 10);
+
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+
+                final Iterator<UUID> iterator = session.playersIds().iterator();
+
+                while (iterator.hasNext()) {
+                    final UUID playerId = iterator.next();
+                    final Player player = Bukkit.getPlayer(playerId);
+
+                    if (player == null) {
+                        continue;
+                    }
+
+                    final double distance = entity.getLocation().distance(player.getLocation());
+
+
+                }
+            }
+        };
 
     }
 

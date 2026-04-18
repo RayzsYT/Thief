@@ -21,7 +21,7 @@ public class ImplSessionProvider implements SessionProvider {
     }
 
 
-    private final Map<UUID, Session> playerSessions = new HashMap<>();
+    private final Map<UUID, ImplSession> playerSessions = new HashMap<>();
     private int currentSessionId = 0;
 
     @Override
@@ -29,7 +29,8 @@ public class ImplSessionProvider implements SessionProvider {
             final de.rayzs.thief.api.map.Map map,
             final Player... players
     ) {
-        final Session session = new ImplSession(api, map, ++currentSessionId);
+        final ImplSession session = new ImplSession(api, map, ++currentSessionId);
+        final UUID uuid = UUID.randomUUID();
 
         for (final Player player : players) {
 
@@ -38,7 +39,8 @@ public class ImplSessionProvider implements SessionProvider {
 
 
             // Set session to player.
-            playerSessions.put(player.getUniqueId(), session);
+            session.addPlayer(uuid);
+            playerSessions.put(uuid, session);
         }
 
         return session;
@@ -62,13 +64,12 @@ public class ImplSessionProvider implements SessionProvider {
     }
 
     @Override
-    public boolean unsetPlayerSessionIf(Player player, Predicate<Session> session) {
-        final Session prev = playerSessions.get(player.getUniqueId());
+    public boolean unsetPlayerSessionIf(Player player, Predicate<Session> predicate) {
+        final ImplSession prev = playerSessions.get(player.getUniqueId());
 
-        if (prev != null && session.test(prev)) {
+        if (prev != null && predicate.test(prev)) {
             playerLeftSession(player, prev);
             playerSessions.remove(player.getUniqueId());
-
             return true;
         }
 
@@ -78,7 +79,7 @@ public class ImplSessionProvider implements SessionProvider {
     @Override
     public void resetAll() {
         playerSessions.entrySet().removeIf(entry -> {
-           final Session session = entry.getValue();
+           final ImplSession session = entry.getValue();
            final UUID uuid = entry.getKey();
 
            final Player player;
@@ -91,7 +92,9 @@ public class ImplSessionProvider implements SessionProvider {
     }
 
 
-    private void playerLeftSession(final Player player, final Session session) {
+    private void playerLeftSession(final Player player, final ImplSession session) {
+        session.removePlayer(player.getUniqueId());
+
         // Code implementation for proper leaving
         // the session. For example a message, etc...
     }

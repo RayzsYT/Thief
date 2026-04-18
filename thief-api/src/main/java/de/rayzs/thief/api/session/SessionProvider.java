@@ -43,10 +43,11 @@ public interface SessionProvider {
      * Unset the session the player is in if the predicate is fulfilled.
      *
      * @param player Player.
+     * @param predicate Predicate for the session.
      *
      * @return Returns {@link Boolean#TRUE} if the player was in a session and is now not anymore. Returns {@link Boolean#FALSE} otherwise.
      */
-    boolean unsetPlayerSessionIf(final Player player, final Predicate<Session> session);
+    boolean unsetPlayerSessionIf(final Player player, final Predicate<Session> predicate);
 
     /**
      * Removes all players from their associated sessions

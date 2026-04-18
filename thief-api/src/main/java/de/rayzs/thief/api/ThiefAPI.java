@@ -17,7 +17,7 @@ public interface ThiefAPI {
 
     /**
      * Get the config provider to create or fetch existing
-     * {@link Config} objects.
+     * {@link de.rayzs.thief.api.configuration.Config} objects.
      * 
      * @return Config provider.
      */
